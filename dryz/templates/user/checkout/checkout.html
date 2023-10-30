@@ -1,0 +1,441 @@
+{% extends 'layouts/main.html'%}
+{% load static %}
+{% block 'title'%} shope{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/user/cart/ui.css' %}" type="text/css">
+
+<style>
+    .address-card {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 5px;
+        width: 200px;
+        /* Set a fixed width */
+        height: 150px;
+        /* Set a fixed height */
+        float: left;
+        position: relative;
+        /* Add position relative to allow absolute positioning */
+    }
+
+    .address-card input[type="radio"] {
+        position: absolute;
+        top: 7px;
+        left: 7;
+    }
+
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .address-option {
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        padding: 10px;
+        margin: 10px;
+        display: inline-block;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        d-flex flex-column align-items-start vertical-align: top;
+        background-color: #f9f9f9;
+    }
+
+    #address {
+        position: absolute;
+        top: 6px;
+        left: 10;
+    }
+
+
+</style>
+{%endblock%}
+<!-- Body Section Begin -->
+{% block 'body'%}
+
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+    <div class="container">
+
+
+        <div class="checkout__form ">
+            <h4>Billing Details</h4>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-12 col-md-6 d-flex flex-column align-items-start">
+                        <h3 class="mb-3"><b>Address</b></h3>
+                        <div class="">
+                            <button type="button" class="responsive-button" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal1">
+                                <i class="fa-solid fa-plus mr-3" style="color: #6aca63;"></i>
+                                Add A New Address
+                            </button>
+                        </div>
+                        {% if default_address %}
+                        <div class="address-options clearfix">
+                            <div class="address-card">
+                                <div><input type="radio" name="selectedAddress" value="{{ default_address.id }}"
+                                            checked></div>
+                                <label class="mt-2">
+                                    <strong>{{ default_address.recipient_name }}</strong><br>
+                                    {{ default_address.house_no }} {{ default_address.street_name }}
+                                    {{default_address.village_name }}
+                                    <br>
+                                    {{ default_address.district }}, {{ default_address.state }}
+                                    {{default_address.postal_code }}<br>
+                                    {{ default_address.country }}
+                                </label>
+                            </div>
+                            {% for address in addresses %}
+                            <div class="address-card">
+                                <div><input type="radio" id="address{{ address.id }}" name="selectedAddress"
+                                            value="{{ address.id }}"></div>
+                                <label for="address{{ address.id }}" class="mt-2">
+                                    <strong>{{ address.recipient_name }}</strong><br>
+                                    {{ address.house_no }} {{ address.street_name }} {{ address.village_name }} <br>
+                                    {{ address.district }}, {{ address.state }} {{ address.postal_code }}<br>
+                                    {{ address.country }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="container m-3">
+                        <div class="row justify-content-start">
+                            <div class="col-6 ">
+                                <h3>Select a address</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container d-flex col-12  col-sm-12 address-block">
+                        <div class="col-lg-8 col-md-6 p-2" style="border: 1px solid #cccccc; border-radius: 10px;">
+                            <div class="row">
+                                <h5 class="m-3"><b>Basic Details</b></h5>
+
+                                <div class="col-lg-12 ">
+                                    <div class="checkout__input pl-2">
+                                        <p>Fist Name<span>*</span></p>
+                                        <input type="text" placeholder="Enter first Name" name="username" id="username"
+                                               value="{{default_address.recipient_name}}" disabled>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pl-2">
+                                        <p>Email<span>*</span></p>
+                                        <input type="email" placeholder="Enter Email" name="email" id="email"
+                                               value="{{default_address.email}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pr-2">
+                                        <p>Phone<span>*</span></p>
+                                        <input type="tel" placeholder=" Enter Phone" name="phone" id="phone"
+                                               value="{{default_address.phone}}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pl-2">
+                                        <p>House No<span>*</span></p>
+                                        <input type="text" placeholder="Enter House No" name="house_no" id="house_no"
+                                               value="{{default_address.house_no}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pr-2">
+                                        <p>Street Name<span>*</span></p>
+                                        <input type="text" placeholder="Enter Street Name" required name="street"
+                                               id="street" value="{{default_address.street_name}}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pl-2">
+                                        <p>District<span>*</span></p>
+                                        <input type="text" placeholder="Enter District" required name="district"
+                                               id="district" value="{{default_address.district}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pr-2">
+                                        <p>State<span>*</span></p>
+                                        <input type="text" placeholder="Enter State" required name="state" id="state"
+                                               value="{{default_address.state}}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pl-2">
+                                        <p>Country<span>*</span></p>
+                                        <input type="text" placeholder="Enter Country" required name="country"
+                                               id="country" value="{{default_address.country}}" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input pr-2">
+                                        <p>Pin Code<span>*</span></p>
+                                        <input type="number" placeholder="Enter Pin Code" required name="pincode"
+                                               value="{{default_address.postal_code}}" id="pincode" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="checkout__order">
+                                <h4>Your Order</h4>
+                                <div class="checkout__order__products">Products <span>Total</span></div>
+                                <ul>
+                                    {% for item in cart_items %}
+                                    <li>{{item.product.product_name}}({{item.variant.selling_price}}) x
+                                        {{item.quantity}}<span>₹{{item.sub_total}}</span></li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="checkout__order__subtotal">Subtotal <span>₹{{total}}</span></div>
+                                <div class="checkout__order__total">Total <span>₹ {{total}}</span></div>
+                                <p>
+                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30"
+                                         viewBox="0 0 48 48">
+                                        <polygon fill="#42a5f5"
+                                                 points="29.62,3 33.053,8.308 39.367,8.624 39.686,14.937 44.997,18.367 42.116,23.995 45,29.62 39.692,33.053 39.376,39.367 33.063,39.686 29.633,44.997 24.005,42.116 18.38,45 14.947,39.692 8.633,39.376 8.314,33.063 3.003,29.633 5.884,24.005 3,18.38 8.308,14.947 8.624,8.633 14.937,8.314 18.367,3.003 23.995,5.884">
+                                        </polygon>
+                                        <polygon fill="#fff"
+                                                 points="21.396,31.255 14.899,24.76 17.021,22.639 21.428,27.046 30.996,17.772 33.084,19.926">
+                                        </polygon>
+                                    </svg>
+                                    Safe and Secure Payments.Easy returns.100% Authentic products.
+                                </p>
+
+
+                                {% if total <= wallet%}
+                                <button type="button" class="site-btn wallet_btn">
+                                    Wallet
+                                </button>
+                                {% endif %}
+                                <button type="button" class="site-btn payWithRazorpay">Pay with Razorpay</button>
+                                <button type="submit" class="site-btn">Cash On Delivery</button>
+                                <div class="loader"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+<!--Add address-->
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+     data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">Add Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add_address_checkout' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-2 mr-1">
+                            <label for="RecipientName" class="form-label">Recipient Name:</label>
+                            <input type="text" class="form-control" id="RecipientName" name="RecipientName" value=""
+                                   required placeholder="Enter Username">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-1 mr-2">
+                            <label for="house_no" class="form-label">House No:</label>
+                            <input type="text" class="form-control" name="house_no" value=""
+                                   placeholder="Enter House No" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3  ml-2 mr-1">
+                            <label for="street_name" class="form-label">Street Name:</label>
+                            <input type="text" class="form-control" id="street_name" name="street_name"
+                                   placeholder="Enter Street" value="" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3  ml-1 mr-2">
+                            <label for="Village" class="form-label">Village/City:</label>
+                            <input type="text" class="form-control" id="Village" name="Village" value=""
+                                   placeholder="Enter City" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-2 mr-1">
+                            <label for="postal_code" class="form-label">Postal Code:</label>
+                            <input type="text" class="form-control" id="postal_code" name="postal_code" value=""
+                                   required placeholder="Enter Postal Code">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-1 mr-2">
+                            <label for="district" class="form-label">District:</label>
+                            <input type="text" class="form-control" id="districct" name="district" value=""
+                                   placeholder="Enter District" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-2 mr-1">
+                            <label for="postal_code" class="form-label"> Email:</label>
+                            <input type="text" class="form-control" name="email" placeholder="Enter Email" value=""
+                                   required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-1 mr-2">
+                            <label for="district" class="form-label">phone:</label>
+                            <input type="tel" class="form-control" name="phone" placeholder="phone" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-2 mr-1">
+                            <label for="state" class="form-label">State:</label>
+                            <input type="text" class="form-control" name="state" value="" placeholder="Enter State"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-1 mr-2">
+                            <label for="country" class="form-label">Country:</label>
+                            <input type="text" class="form-control" name="country" value="" placeholder="Enter country"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<!--<script src="{% static '/js/checkout.js' %}"></script>-->
+<!-- Checkout Section End -->
+{% endblock%}
+
+{% block j-script %}
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!--Razorpay checkout-->
+<script>
+    $(document).ready(function () {
+
+        $('.wallet_btn').click(function (e) {
+
+            e.preventDefault();
+            console.log("Clicked the wallet button");
+            var username = $("[name='username']").val();
+            var email = $("[name='email']").val();
+            var phone = $("[name='phone']").val();
+            var house_no = $("[name='house_no']").val();
+            var street = $("[name='street']").val();
+            var district = $("[name='district']").val();
+            var state = $("[name='state']").val();
+            var country = $("[name='country']").val();
+            var pincode = $("[name='pincode']").val();
+            var token = $("[name='csrfmiddlewaretoken']").val();
+
+            if (username == "" || email == "" || phone == "" || house_no == "" || street == "" || district == "" || state == "" || country == "" || pincode == "") {
+                Swal.fire(
+                    'Alert!',
+                    'All fields are mandatory!',
+                    'error'
+                );
+                return false;
+            } else {
+                $.ajax({
+                    url: '/wallet-payment/', // The URL you want to request
+                    method: 'GET', // HTTP request method (GET, POST, PUT, DELETE, etc.)
+                    dataType: 'json',
+                    success: function (data) {
+                        data = {
+                            'username': username,
+                            'email': email,
+                            'phone': phone,
+                            'house_no': house_no,
+                            'street': street,
+                            'state': state,
+                            'house_no': house_no,
+                            'district': district,
+                            'country': country,
+                            'pincode': pincode,
+                            'payment_mode': 'wallet',
+                            'payment_id': '',
+                            csrfmiddlewaretoken: token,
+                        };
+                        $.ajax({
+                            url: '/cart/checkout/',
+                            method: 'POST',
+                            data: data,
+                            success: function (data2) {
+
+                                swal({
+                                    title: "Congratulations!",
+                                    text: "Your order has been placed successfully",
+                                    icon: "success",
+                                    buttons: true,
+                                    dangerMode: true,
+                                }).then((willDelete) => {
+                                    if (willDelete) {
+                                        var url1 = '/cart/my-order/';
+
+                                        var postData = {
+                                            csrfmiddlewaretoken: token
+                                        };
+
+                                        $.post(url1, postData, function () {
+
+                                            window.location.href = '/cart/my-order/'; // Replace with the URL you want to redirect to.
+                                        });
+                                    } else {
+                                        swal("Your imaginary file is safe!");
+                                    }
+                                });
+                            },
+                            error: function (error) {
+                                // Callback function to handle errors
+                                console.error('Error:', error);
+                            }
+                        });
+                    },
+                });
+            }
+        });
+
+
+    });
+
+</script>
+<script src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

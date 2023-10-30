@@ -1,0 +1,245 @@
+{% extends 'layouts/main.html'%}
+{% load static %}
+{% block 'title'%} shope{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/user/cart/ui.css' %}" type="text/css">
+<style>
+
+.price {
+  font-weight: 600;
+  color: #212529;
+}
+
+.price-old {
+  color: #969696;
+  margin-left: 3px;
+  font-size: 85%;
+}
+
+
+   #coupon_select {
+        width: 500px; /* You can adjust the width as needed */
+    }
+
+
+</style>
+{%endblock%}
+<!-- Body Section Begin -->
+{% block 'body'%}
+{% if not cart_items %}
+<h2 class="text-center">Your shopping cart is empty</h2>
+<br>
+<div class="text-center mb-4">
+    <a href="{% url 'view_shop' %}" class="primary-btn cart-btn ">CONTINUE SHOPPING</a>
+    <a href="{% url 'view_shop' %}" class="primary-btn cart-btn cart-btn-right">
+        <span class="icon_loading"></span></a>
+</div>
+{% else %}
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="shoping__product">Products</th>
+                            <th></th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for cart_item in cart_items %}
+                        <tr>
+                            <td class="shoping__cart__item">
+                                <a href="{% url 'single_product' product_id=cart_item.variant.id %}">
+                                    <img src="{{ cart_item.product.images.url }}" alt="" width="100px">
+                                    <h5>{{cart_item.product.product_name}}</h5>
+                                </a>
+
+                            </td>
+                            <td class="shoping__cart__price">{{cart_item.variant.weight}}{{cart_item.variant.unit}}</td>
+                            <td class="shoping__cart__price">
+                                ₹{{cart_item.variant.selling_price}}
+                            </td>
+                            <td class="shoping__cart__quantity">
+                                <div class="col">
+                                    <div class="input-group input-spinner">
+    <div class="input-group-prepend">
+        <a href="#" class="btn btn-light" id="button-minus" data-variant-id="{{ cart_item.variant.id }}">
+            <i class="fa fa-minus"></i>
+        </a>
+    </div>
+    <input type="text" class="form-control" value="{{ cart_item.quantity }}" id="quantity-{{ cart_item.variant.id }}">
+    <div class="input-group-append">
+        <a href="#" class="btn btn-light" id="button-plus" data-variant-id="{{ cart_item.variant.id }}">
+            <i class="fa fa-plus"></i>
+        </a>
+    </div>
+</div>
+ <!-- input-group.// -->
+                                </div> <!-- col.// -->
+                            </td>
+                            <td class="shoping__cart__total" id="total">
+                                ₹{{ cart_item.sub_total }}
+                            </td>
+                            <td class="shoping__cart__item__close">
+                                <a href="{% url 'remove_cart_item' cart_item.variant.id %}">
+                                    <span class="icon_close"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__btns">
+                    <a href="{% url 'view_shop' %}" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+                    <a href="{% url 'view_shop' %}" class="primary-btn cart-btn cart-btn-right"><span
+                            class="icon_loading"></span>
+                        Upadate Cart</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                {% include 'include/alert.html' %}
+                <div class="shoping__continue">
+                    <div class="shoping__discount">
+                        <h5>Discount Codes</h5>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="text" placeholder="Enter your coupon code" id="apply_coupon">
+                            <button type="submit" class="site-btn">APPLY COUPON</button>
+                            <div>
+                                <select class="form-select" aria-label="Default select example" id="coupon_select" name="coupon_select">
+                                    {% for coupon in valid_coupons %}
+                                    <option value="{{ coupon.coupon_code }}">{{ coupon.coupon_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="shoping__checkout">
+                    <h5>Cart Total</h5>
+                    <ul>
+                        <li>Subtotal <span>₹{{total}}</span></li>
+                        <li>Total <span>₹{{total}}</span></li>
+                    </ul>
+                    <a href="{% url 'checkout' %}" class="primary-btn">PROCEED TO CHECKOUT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+<!-- Shoping Cart Section End -->
+{% endblock%}
+
+{% block j-script %}
+<script>
+<!--    const applyCouponField = document.getElementById('apply_coupon');-->
+<!--    console.log(applyCouponField);-->
+<!--    const couponSelect = document.getElementById('coupon_select');-->
+<!--    console.log(couponSelect);-->
+<!--    couponSelect.addEventListener('change', function () {-->
+<!--        applyCouponField.value = this.value;-->
+<!--    });-->
+<!--    -->
+
+    $(document).ready(function () {
+    // Attach a change event handler to the select field
+    $("#coupon_select").change(function () {
+        // Get the selected value from the select field
+        var selectedValue = $(this).val();
+
+        $("#apply_coupon").val(selectedValue);
+
+    });
+    $("#variant-dropdown").trigger("change");
+
+
+ function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Check if the cookie name matches the CSRF token cookie name
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+
+    // Increment button
+    $('body').on('click', '#button-plus', function (e) {
+        e.preventDefault();
+        var variantId = $(this).data('variant-id');
+        var quantityField = $('#quantity-' + variantId);
+        var csrftoken = getCookie('csrftoken');
+        console.log("hh");
+         console.log(variantId);
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'increment_cart' 0 %}".replace('0', variantId),
+            data: {
+                'variant_id': variantId,
+                csrfmiddlewaretoken: csrftoken
+            },
+            success: function (data) {
+                quantityField.val(data.quantity);
+                console.log(data.quantity);
+                document.getElementById('total').innerText = "₹"+data.total;
+            }
+        });
+    });
+
+    // Decrement button
+    $('body').on('click', '#button-minus', function (e) {
+        e.preventDefault();
+        var variantId = $(this).data('variant-id');
+        var quantityField = $('#quantity-' + variantId);
+         var csrftoken = getCookie('csrftoken');
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'remove_cart' 0 %}".replace('0', variantId),
+            data: {
+                'variant_id': variantId,
+                csrfmiddlewaretoken: csrftoken
+            },
+            success: function (data) {
+            if (data.status === 'empty') {
+            // Redirect to the 'cart' page
+            window.location.href = "{% url 'cart' %}";
+            }else{
+                quantityField.val(data.quantity);
+                console.log(data.quantity);
+                document.getElementById('total').innerText = "₹"+data.total;
+                }
+
+            }
+        });
+    });
+});
+
+
+</script>
+
+{% endblock %}

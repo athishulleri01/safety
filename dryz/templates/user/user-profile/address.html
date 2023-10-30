@@ -1,0 +1,382 @@
+{% extends 'user/user-profile/profile-info.html' %}
+{% load static %}
+{% block 'title'%} checkout{% endblock %}
+{% block styles %}
+<style>
+    .parent-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Adjust the height as needed */
+    background-color: white; /* Background color for the parent div */
+}
+
+.responsive-button {
+    width: 100%; /* Button width matches parent div */
+    background-color: white; /* White background color */
+    color: green; /* Green text  */
+    border: 2px solid grey; /* Blue border */
+    padding: 10px; /* Adjust padding as needed for button size */
+    cursor: pointer; /* Add cursor pointer on hover */
+    align-items: left;
+}
+.responsive-button:hover {
+    width: 100%; /* Button width matches parent div */
+    background-color: #7fad39; /* White background color */
+    color: white; /* Green text  */
+    border: 3px solid white; /* Blue border */
+    padding: 10px; /* Adjust padding as needed for button size */
+    cursor: pointer; /* Add cursor pointer on hover */
+    align-items: left;
+}
+.card-body{
+width: 100%;
+border: 3px solid grey;
+}
+.address-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        /* User details section */
+        .user-details {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Address section */
+        .address {
+            margin-bottom: 15px;
+        }
+
+        /* Action buttons section */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Edit and Delete buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-edit {
+            background-color: #2874f0;
+            color: #fff;
+        }
+
+        .btn-delete {
+            background-color: #ff3f6c;
+            color: #fff;
+        }
+
+
+
+
+
+
+
+</style>
+{% endblock %}
+{% block body %}
+<!--            profile edit-->
+<!-- Profile Edit -->
+<!-- Edit Profile -->
+<div class="container" style="bg-color: white !important;">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 col-md-4 ">
+            <h2 class="mt-4 mb-4">Manage Addresses</h2>
+            <div class="card">
+                <div class="parent-div">
+                    <button type="button" class="responsive-button" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal1"><i class='fas fa-pencil-alt' style="color: #6aca63;"></i>Add
+                        A New Address
+                    </button>
+                </div>
+                {% if addresses %}
+                <div class="card-body">
+                    {% for address in addresses %}
+                    <div class="address-card">
+                        <div class="user-details d-flex ">
+                            <div class="mr-4">{{ address.recipient_name }}</div>
+                            <div class="">{{ address.phone }}</div>
+                        </div>
+                        <p>{{ address.email }}</p>
+                        <div class="address d-flex ">
+                            <div class="mr-2">{{ address.house_no }},</div>
+                            <div class="mr-2">{{ address.street_name }},</div>
+                            <div class="mr-2">{{ address.village_name }},</div>
+
+
+                        </div>
+                        <div class="address d-flex ">
+
+                            <div class="mr-2">{{ address.district }},</div>
+                            <div class="mr-2">{{ address.state }},</div>
+                            <div class="mr-2">{{ address.postal_code }}</div>
+
+                        </div>
+                        <div class="actions">
+                            <button class="btn " data-bs-toggle="modal"
+                                    data-bs-target="#editCategoryModal-{{forloop.counter}}"><i class="fas fa-pencil-alt"
+                                                                                               style="color: #66ce64;"></i></i>
+                            </button>
+                            <a href="{% url 'delete_address' address.id %}" class="btn "><i class="fas fa-trash-alt"
+                                                                                            style="color: #e61e1e;"></i></a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!--Add address-->
+    <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Add Address</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{% url 'add_address' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3 ml-2 mr-1">
+                                <label for="RecipientName" class="form-label">Recipient Name:</label>
+                                <input type="text" class="form-control" id="RecipientName" name="RecipientName"
+                                       value="" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3 ml-1 mr-2"
+                            ">
+                            <label for="house_no" class="form-label">House No:</label>
+                            <input type="text" class="form-control" id="house_no" name="house_no" value=""
+                                   required>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3  ml-2 mr-1">
+                        <label for="street_name" class="form-label">Street Name:</label>
+                        <input type="text" class="form-control" id="street_name" name="street_name"
+                               value="" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3  ml-1 mr-2">
+                        <label for="Village" class="form-label">Village/City:</label>
+                        <input type="text" class="form-control" id="Village" name="Village" value=""
+                               required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3 ml-2 mr-1">
+                        <label for="postal_code" class="form-label">Postal Code:</label>
+                        <input type="text" class="form-control" id="postal_code" name="postal_code"
+                               value="" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 ml-1 mr-2">
+                        <label for="district" class="form-label">District:</label>
+                        <input type="text" class="form-control" id="district" name="district" value=""
+                               required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3 ml-2 mr-1">
+                        <label for="postal_code" class="form-label"> Email:</label>
+                        <input type="text" class="form-control" name="email"
+                               value="" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 ml-1 mr-2">
+                        <label for="district" class="form-label">phone:</label>
+                        <input type="text" class="form-control" name="phone" value="phone"
+                               required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3 ml-2 mr-1">
+                        <label for="state" class="form-label">State:</label>
+                        <input type="text" class="form-control" id="state" name="state" value=""
+                               required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 ml-1 mr-2">
+                        <label for="country" class="form-label">Country:</label>
+                        <input type="text" class="form-control" id="country" name="country" value=""
+                               required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3 ml-5 mr-2 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="default_address"
+                               id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Default address</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!--edit address -->
+{% for address in addresses %}
+<div class="modal fade" id="editCategoryModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--            <div class="modal-header">-->
+            <!--                <h5 class="modal-title" id="exampleModalLabel">Add Address</h5>-->
+            <!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+            <!--            </div>-->
+            <form method="post" action="{% url 'edit_address' address_id=address.id %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-2 mr-1">
+                            <label for="RecipientName" class="form-label">Recipient Name:</label>
+                            <input type="text" class="form-control" name="RecipientName"
+                                   value="{{address.recipient_name}}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 ml-1 mr-2"
+                        ">
+                        <label for="house_no" class="form-label">House No:</label>
+                        <input type="text" class="form-control" name="house_no" value="{{address.house_no}}"
+                               required>
+                    </div>
+                </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3  ml-2 mr-1">
+                    <label for="street_name" class="form-label">Street Name:</label>
+                    <input type="text" class="form-control" name="street_name"
+                           value="{{address.street_name}}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3  ml-1 mr-2">
+                    <label for="Village" class="form-label">Village/City:</label>
+                    <input type="text" class="form-control" name="Village" value="{{address.village_name}}"
+                           required>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3 ml-2 mr-1">
+                    <label for="postal_code" class="form-label">Postal Code:</label>
+                    <input type="text" class="form-control" name="postal_code"
+                           value="{{address.postal_code}}" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3 ml-1 mr-2">
+                    <label for="district" class="form-label">District:</label>
+                    <input type="text" class="form-control" name="district" value="{{address.district}}"
+                           required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="mb-3 ml-1 mr-2">
+                    <label for="district" class="form-label">Email:</label>
+                    <input type="text" class="form-control" name="email" value="{{address.email}}"
+                           required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3 ml-2 mr-1">
+                    <label class="form-label"> Phone:</label>
+                    <input type="tel" class="form-control" name="phone"
+                           value="{{address.phone}}" required>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3 ml-2 mr-1">
+                    <label for="state" class="form-label">State:</label>
+                    <input type="text" class="form-control" name="state" value="{{address.state}}"
+                           required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3 ml-1 mr-2">
+                    <label for="country" class="form-label">Country:</label>
+                    <input type="text" class="form-control" name="country" value="{{address.country}}"
+                           required>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3 ml-5 mr-2 form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="default_address"
+                       id="flexSwitchCheckDefa">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Default address</label>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+
+    </div>
+</div>
+</div>
+{% endfor %}
+{% endblock %}
+{% block j-script %}
+
+<!-- Add this in the head section of your HTML file -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+</script>
+{% endblock %}

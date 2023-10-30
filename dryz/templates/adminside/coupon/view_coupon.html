@@ -1,0 +1,190 @@
+{% extends 'layouts/admin_main.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row b-5">
+        <div class="col-md-12">
+            <button type="button" class="btn text-white mb-3" style="background-color:rgba(127, 173, 57, 1)"
+                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add Product
+            </button>
+        </div>
+    </div>
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Coupons</h6>
+
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                <tr class="text-dark">
+                    <th scope="col">Id</th>
+                    <th scope="col">Coupon Name</th>
+                    <th scope="col">Coupon Code</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">Min Purchase</th>
+                    <th scope="col">Valid From</th>
+                    <th scope="col">Valid Till</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" colspan="2">Actions</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for coupon in coupons %}
+                <tr>
+                    <td>{{coupon.id}}</td>
+                    <td>{{coupon.coupon_name}}</td>
+                    <td>{{coupon.coupon_code}}</td>
+                    <td>₹ {{coupon.coupon_discount}}</td>
+                    <td>₹ {{coupon.min_purchase}}</td>
+                    <td>{{coupon.start_date}}</td>
+                    <td>{{coupon.end_date}}</td>
+                    <td>{{coupon.active}}</td>
+                    <td>
+                        <button type="button" class="btn btn-warning  mb-3"
+                                data-bs-toggle="modal" data-bs-target="#editCategoryModal-{{forloop.counter}}">
+                            Edit
+                        </button>
+                    </td>
+                    <td>
+                        <a href="{% url 'delete_coupon' id=coupon.id %}">
+                            <button class="btn btn-danger toggle-btn">Delete</button>
+                        </a>
+                    </td>
+                </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--Add coupon-->
+<div class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Coupon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Coupon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'add_coupon' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="coupon_name">Coupon Name:</label>
+                        <input type="text" id="coupon_name" class="form-control" name="coupon_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="coupon_code">Coupon code:</label>
+                        <input type="text" id="coupon_code" class="form-control" name="coupon_code" required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="min_price">Minimum Purchase price:</label>
+                        <input type="number" id="min_price" class="form-control" name="min_price" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discount_amount">Coupon Discount Amount:</label>
+                        <input type="number" id="discount_amount" class="form-control" name="discount_amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date" id="start_date" class="form-control" name="start_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date:</label>
+                        <input type="date" id="end_date" class="form-control" name="end_date">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Edit -->
+{% for coupon in coupons %}
+<div class="modal fade" id="editCategoryModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'edit_coupon' id=coupon.id %}"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Edit Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="coupon_name">Coupon Name:</label>
+                        <input type="text"  class="form-control" name="coupon_name" value="{{coupon.coupon_name}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="coupon_code">Coupon code:</label>
+                        <input type="text"  class="form-control" name="coupon_code" value="{{coupon.coupon_code}}"  required>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="min_price">Minimum Purchase price:</label>
+                        <input type="number" class="form-control" name="min_price"  value="{{coupon.min_purchase}}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discount_amount">Coupon Discount Amount:</label>
+                        <input type="number"  class="form-control" value="{{coupon.coupon_discount}}" name="discount_amount">
+                    </div>
+                    <div class="form-group">
+                        <label for="start_date">Start Date:</label>
+                        <input type="date"  class="form-control" value="{{ coupon.start_date|date:'Y-m-d' }}" name="start_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">End Date:</label>
+                        <input type="date"  class="form-control" value="{{ coupon.end_date|date:'Y-m-d' }}" name="end_date">
+                    </div>
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%endfor%}
+
+{% endblock %}

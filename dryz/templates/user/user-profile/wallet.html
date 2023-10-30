@@ -1,0 +1,49 @@
+{% extends 'user/user-profile/profile-info.html' %}
+{% load static %}
+{% block 'title'%} checkout{% endblock %}
+{% block body %}
+<!-- Profile Edit -->
+
+    <div class="card col-lg-12">
+        <h2 class="mt-4 mb-4"> wallet</h2>
+        <div class="card-body">
+             {% include 'include/alert.html' %}
+            <div>
+                <h4>wallet balance : ₹{{wallet}}</h4>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit Profile End -->
+
+<!--edit profile end-->
+{% endblock %}
+{% block j-script %}
+<!-- Add this in the head section of your HTML file -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+    // Edit button click event
+    $("#editButton").click(function () {
+        // Enable input fields
+        $("#username, #firstname,#lastname, #phone").prop("readonly", false);
+
+        // Show the Save button and hide the Edit button
+        $("#editButton").hide();
+        $("#saveButton").show();
+    });
+
+    // Save button click event
+    $("#saveButton").click(function () {
+        // Disable input fields
+        $("#username, #phone").prop("readonly", true);
+
+        // Hide the Save button and show the Edit button
+        $("#saveButton").hide();
+        $("#editButton").show();
+    });
+});
+
+
+</script>
+{% endblock %}

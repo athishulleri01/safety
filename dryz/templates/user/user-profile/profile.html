@@ -1,0 +1,80 @@
+{% extends 'user/user-profile/profile-info.html' %}
+{% load static %}
+{% block 'title'%} checkout{% endblock %}
+{% block body %}
+<!-- Profile Edit -->
+
+<form method="post" action="{% url 'profile' %}" >
+     {% csrf_token %}
+    <div class="card col-lg-12">
+        <h2 class="mt-4 mb-4"> Profile</h2>
+        <div class="card-body">
+             {% include 'include/alert.html' %}
+            <div class="mb-3">
+                <label for="username" class="form-label">First name</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" value="{{user.first_name}}"
+                       readonly>
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">Last name</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" value="{{user.last_name}}"
+                       readonly>
+            </div>
+
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{user.username}}"
+                       readonly>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{user.email}}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone" value="{{user.phone}}" readonly>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center col-lg-6 mt-2">
+        <button type="button" class="btn btn-primary edit-btn" id="editButton">
+            Edit
+        </button>
+        <button type="submit" class="btn btn-success save-btn" id="saveButton" style="display: none;">
+            Save
+        </button>
+    </div>
+</form>
+<!-- Edit Profile End -->
+
+<!--edit profile end-->
+{% endblock %}
+{% block j-script %}
+<!-- Add this in the head section of your HTML file -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+    // Edit button click event
+    $("#editButton").click(function () {
+        // Enable input fields
+        $("#username, #firstname,#lastname, #phone").prop("readonly", false);
+
+        // Show the Save button and hide the Edit button
+        $("#editButton").hide();
+        $("#saveButton").show();
+    });
+
+    // Save button click event
+    $("#saveButton").click(function () {
+        // Disable input fields
+        $("#username, #phone").prop("readonly", true);
+
+        // Hide the Save button and show the Edit button
+        $("#saveButton").hide();
+        $("#editButton").show();
+    });
+});
+
+
+</script>
+{% endblock %}

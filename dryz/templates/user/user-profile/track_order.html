@@ -1,0 +1,453 @@
+{% extends 'user/user-profile/profile-info.html' %}
+{% load static %}
+{% block 'title'%} checkout{% endblock %}
+{% block styles %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+ol.progtrckr {
+    margin: 0;
+    padding: 0;
+    list-style-type none;
+}
+
+ol.progtrckr li {
+    display: inline-block;
+    text-align: center;
+    line-height: 3.5em;
+}
+
+ol.progtrckr[data-progtrckr-steps="2"] li { width: 49%; }
+ol.progtrckr[data-progtrckr-steps="3"] li { width: 33%; }
+ol.progtrckr[data-progtrckr-steps="4"] li { width: 24%; }
+ol.progtrckr[data-progtrckr-steps="5"] li { width: 19%; }
+ol.progtrckr[data-progtrckr-steps="6"] li { width: 16%; }
+ol.progtrckr[data-progtrckr-steps="7"] li { width: 14%; }
+ol.progtrckr[data-progtrckr-steps="8"] li { width: 12%; }
+ol.progtrckr[data-progtrckr-steps="9"] li { width: 11%; }
+
+ol.progtrckr li.progtrckr-done {
+    color: black;
+    border-bottom: 4px solid yellowgreen;
+}
+ol.progtrckr li.progtrckr-todo {
+    color: silver;
+    border-bottom: 4px solid silver;
+}
+
+ol.progtrckr li:after {
+    content: "\00a0\00a0";
+}
+ol.progtrckr li:before {
+    position: relative;
+    bottom: -2.5em;
+    float: left;
+    left: 50%;
+    line-height: 1em;
+}
+ol.progtrckr li.progtrckr-done:before {
+    content: "\2713";
+    color: white;
+    background-color: yellowgreen;
+    height: 2.2em;
+    width: 2.2em;
+    line-height: 2.2em;
+    border: none;
+    border-radius: 2.2em;
+}
+ol.progtrckr li.progtrckr-todo:before {
+    content: "\039F";
+    color: silver;
+    background-color: white;
+    font-size: 2.2em;
+    bottom: -1.2em;
+}
+
+
+
+
+
+
+
+
+
+
+
+</style>
+{% endblock %}
+{% block body %}
+<div class="container mt-3">
+    <h2>Orders</h2>
+
+    <table class="table table-light table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>price</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in orders %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{item.product.product_name}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.price}}</td>
+        </tr>
+
+        {% endfor %}
+        <tr>
+
+            <td colspan="3" class="align-right" style="text-align: right;">Total</td>
+            <td><b>{{order.total_price}}</b></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="d-none d-sm-block">
+    {% if item.status == 'Delivered' %}
+  <div class="m-3 mr-5 d-flex justify-content-end"><a class="btn btn-warning" href="{% url 'pdf_download' id=order.id %}">download invoice</a></div>
+    {% endif %}
+</div>
+
+<div>
+<!--    large size-->
+    {% if status == "Order Confirmed" %}
+    <div class="m-5 d-none d-sm-block d-md-block">
+        <ol class="progtrckr" data-progtrckr-steps="5">
+            <li class="progtrckr-done">Order Processing</li><!--
+ -->
+            <li class="progtrckr-todo">Pre-Production</li><!--
+ -->
+            <li class="progtrckr-todo">In Production</li><!--
+ -->
+            <li class="progtrckr-todo">Shipped</li><!--
+ -->
+            <li class="progtrckr-todo">Delivered</li>
+        </ol>
+    </div>
+    {% elif status == "Pre-Production" %}
+    <div class="m-5 d-none d-sm-block d-md-block">
+        <ol class="progtrckr" data-progtrckr-steps="5">
+            <li class="progtrckr-done">Order Processing</li><!--
+ -->
+            <li class="progtrckr-done">Pre-Production</li><!--
+ -->
+            <li class="progtrckr-todo">In Production</li><!--
+ -->
+            <li class="progtrckr-todo">Shipped</li><!--
+ -->
+            <li class="progtrckr-todo">Delivered</li>
+        </ol>
+    </div>
+    {% elif status == "In Production" %}
+    <div class="m-5 d-none d-sm-block d-md-block">
+        <ol class="progtrckr" data-progtrckr-steps="5">
+            <li class="progtrckr-done">Order Processing</li><!--
+ -->
+            <li class="progtrckr-done">Pre-Production</li><!--
+ -->
+            <li class="progtrckr-done">In Production</li><!--
+ -->
+            <li class="progtrckr-done">Shipped</li><!--
+ -->
+            <li class="progtrckr-todo">Delivered</li>
+        </ol>
+    </div>
+    {% elif status == "Delivered" %}
+    <div class="m-5 d-none d-sm-block d-md-block">
+        <ol class="progtrckr" data-progtrckr-steps="5">
+            <li class="progtrckr-done">Order Processing</li><!--
+ -->
+            <li class="progtrckr-done">Pre-Production</li><!--
+ -->
+            <li class="progtrckr-done">In Production</li><!--
+ -->
+            <li class="progtrckr-done">Shipped</li><!--
+ -->
+            <li class="progtrckr-done">Delivered</li>
+        </ol>
+    </div>
+    {% else %}
+    <div class="m-5 d-none d-sm-block d-md-block">
+        <ol class="progtrckr" data-progtrckr-steps="5">
+            <li class="progtrckr-done" style=" border-bottom: 4px solid red ; content: '\0' ; !important">Order
+                Processing
+            </li><!--
+ -->
+            <li class="progtrckr-done" style=" border-bottom: 4px solid red ;!important">Pre-Production</li><!--
+ -->
+            <li class="progtrckr-done" style=" border-bottom: 4px solid red ;!important">In Production</li><!--
+ -->
+            <li class="progtrckr-done" style=" border-bottom: 4px solid red ;!important">Shipped</li>
+
+            <li class="progtrckr-done" style=" border-bottom: 4px solid red ;!important">Cancelled</li>
+        </ol>
+    </div>
+    {% endif %}
+<!--large-->
+
+<!--small size-->
+
+
+
+    {% if status == "Order Confirmed" %}
+    <div class="m-5 d-block d-sm-none d-md-none">
+        <ul>
+            <li class="text-success">Order Processing</li><!--
+ -->
+            <li class="text-secondary">Pre-Production</li><!--
+ -->
+            <li class="text-secondary">In Production</li><!--
+ -->
+            <li class="text-secondary">Shipped</li><!--
+ -->
+            <li class="text-secondary">Delivered</li>
+        </ul>
+    </div>
+    {% elif status == "Pre-Production" %}
+    <div class="m-5 d-block d-sm-none d-md-none">
+        <ul>
+            <li class="text-success">Order Processing</li><!--
+ -->
+            <li class="text-success">Pre-Production</li><!--
+ -->
+            <li class="text-secondary">In Production</li><!--
+ -->
+            <li class="text-secondary">Shipped</li><!--
+ -->
+            <li class="text-secondary">Delivered</li>
+        </ul>
+    </div>
+    {% elif status == "In Production" %}
+    <div class="m-5 d-block d-sm-none d-md-none">
+        <ul>
+            <li class="text-success">Order Processing</li><!--
+ -->
+            <li class="text-success">Pre-Production</li><!--
+ -->
+            <li class="text-success">In Production</li><!--
+ -->
+            <li class="text-secondary">Shipped</li><!--
+ -->
+            <li class="text-secondary">Delivered</li>
+        </ul>
+    </div>
+    {% elif status == "Delivered" %}
+    <div class="m-5 d-block d-sm-none d-md-none">
+        <ul>
+            <li class="text-success">Order Processing</li><!--
+ -->
+            <li class="text-success">Pre-Production</li><!--
+ -->
+            <li class="text-success">In Production</li><!--
+ -->
+            <li class="text-secondary">Shipped</li><!--
+ -->
+            <li class="text-secondary">Delivered</li>
+        </ul>
+    </div>
+    {% else %}
+    <div class="m-5 d-block d-sm-none d-md-none">
+        <ul>
+            <li class="progtrckr-done" style=" border-bottom: 4px solid red ; content: '\0' ; !important">Order
+                Processing
+            </li><!--
+ -->
+            <li class="text-success" style=" border-bottom: 4px solid red ;!important">Pre-Production</li><!--
+ -->
+            <li class="text-success" style=" border-bottom: 4px solid red ;!important">In Production</li><!--
+ -->
+            <li class="text-success" style=" border-bottom: 4px solid red ;!important">Shipped</li>
+
+            <li class="text-success" style=" border-bottom: 4px solid red ;!important">Cancelled</li>
+        </ul>
+    </div>
+    {% endif %}
+
+
+<!--small size-->
+
+
+
+
+    <div class="d-flex ">
+        <div>
+            {% if item.status != 'Delivered' %}
+            <div class="mt-5">
+                {% if item.status == 'Cancelled' %}
+                <div class="d-flex">
+                    <div class="_3SbeKb qU6Nxg mt-2"></div>
+                    <h5>Cancelled</h5></div>
+
+                {% else %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">
+                    cancel order
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        <div>
+            {% if item.status == 'Delivered' %}
+            <div class="mt-5">
+                {% if item.status == 'Return requested' %}
+                <div class="d-flex">
+                    <div class="_3SbeKb qU6Nxg mt-2"></div>
+                    <h5>Return requested</h5></div>
+
+                {% else %}
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal1">
+                    Return
+                </button>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<!--Cancel order Modal -->
+<div class="modal fade col-lg-12 col-md-6 col-sm-3" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'cancel_order' order_item_id=item.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Order Cancellation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h3>REASON FOR CANCELLATION</h3>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancel" id="noLongerHaveItem"
+                               value="I no longer have this item">
+                        <label class="form-check-label" for="noLongerHaveItem">I no longer have this item</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancel" id="dontWantToSell"
+                               value="I don't want to sell this item">
+                        <label class="form-check-label" for="dontWantToSell">I don't want to sell this item</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancel" id="foundDefective"
+                               value="I found the item to be defective">
+                        <label class="form-check-label" for="foundDefective">I found the item to be defective</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="cancel" id="otherReason" value="other">
+                        <label class="form-check-label" for="otherReason">Other</label>
+                    </div>
+
+                    <div class="form-group" id="otherReasonInput" style="display: none;">
+                        <textarea class="form-control" name="reason" placeholder="Enter your reason"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Return Product Modal -->
+<div class="modal fade col-lg-12 col-md-6 col-sm-3" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'return_order' order_item_id=item.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">Return Product </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h3>REASON FOR RETURN PRODUCT</h3>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="return" id="noLongerHaveItem1"
+                               value="I no longer have this item">
+                        <label class="form-check-label" for="noLongerHaveItem">I no longer have this item</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="return" id="dontWantToSell1"
+                               value="I don't want to sell this item">
+                        <label class="form-check-label" for="dontWantToSell">I don't want to sell this item</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="return" id="foundDefective1"
+                               value="I found the item to be defective">
+                        <label class="form-check-label" for="foundDefective">I found the item to be defective</label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="return" id="otherReason1" value="other">
+                        <label class="form-check-label" for="otherReason">Other</label>
+                    </div>
+
+                    <div class="form-group" id="otherReasonInput1" style="display: none;">
+                        <textarea class="form-control" name="reason" placeholder="Enter your reason"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block j-script %}
+
+<!-- Add this in the head section of your HTML file -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+    // When the "Other" radio button is selected, show the textarea
+    $('input[name="cancel"]').change(function() {
+        if (this.value === "other") {
+            $('#otherReasonInput').show();
+        } else {
+            $('#otherReasonInput').hide();
+        }
+    });
+     $('input[name="return"]').change(function() {
+        if (this.value === "other") {
+            $('#otherReasonInput1').show();
+        } else {
+            $('#otherReasonInput1').hide();
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+</script>
+{% endblock %}

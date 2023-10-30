@@ -1,0 +1,220 @@
+{% extends 'layouts/admin_main.html' %}
+{% load static %}
+
+{% block styles %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="{% static 'css/admin/css/image.upload.css' %}" type="text/css">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid pt-4 ">
+    <div class="row b-5">
+        <div class="col-md-12">
+            <!--         <a href="">-->
+            <!--                <button class="btn toggle-btn "  "></button>-->
+            <!--            </a>-->
+            <button type="button" class="btn text-white mb-3" style="background-color:rgba(127, 173, 57, 1)"
+                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add Variant
+            </button>
+        </div>
+    </div>
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between ">
+            <h6 class="mb-0">Product Variants</h6>
+
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0 table-striped">
+                <thead>
+                <tr class="text-dark">
+                    <th scope="col"></th>
+                    <!--                    <th scope="col">PRODUCTS ID</th>-->
+                    <th scope="col">PRODUCTS NAME</th>
+                    <th scope="col">WEIGHT</th>
+                    <th scope="col">ORIGINAL PRICE</th>
+                    <th scope="col">SELLING PRICE</th>
+                    <th scope="col">STOCK</th>
+                    <th scope="col">IS AVAILABLE</th>
+                    <th>Edit</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in variants %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <!--                    <td>{{item.product.id }}</td>-->
+                    <td>{{item.product.product_name }}</td>
+                    <td>{{item.weight}}</td>
+                    <td>Rs. {{item.original_price}}</td>
+                    <td>Rs. {{item.selling_price}}</td>
+                    <td>{{item.stock}}</td>
+                    <td>{{item.is_available}}</td>
+                    <td>
+                        <button type="button" class="btn  mb-3"
+                                data-bs-toggle="modal" data-bs-target="#editCategoryModal-{{forloop.counter}}">
+                            <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                        </button>
+                    </td>
+                    <td>
+                        {% if item.is_available %}
+                        <a href="{% url 'variant_unlist' variant_id=item.id %}">
+                            <button class="btn btn-danger toggle-btn">Unlist</button>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'variant_unlist' variant_id=item.id %}">
+                            <button class="btn btn-success toggle-btn">List</button>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!--data-bs-backdrop="static"-->
+<!--Add Product-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_product' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Product Name -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="category_name">Product Name:</label>
+                            <input type="text" class="form-control" name="product_name" required>
+                        </div>
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="category">Category:</label>
+                            <select class="form-control" id="category" name="category_name" required>
+                                {% for cat in sub_cat %}
+                                <option value="{{cat.id }}">{{cat.sub_category_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                    </div>
+
+                    <!-- Product Images -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="images">Product Images 1:</label>
+                            <input class="form-control" type="file" name="img1">
+                        </div>
+                    </div>
+
+                    <!-- Variants -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-12 mx-1">
+                            <label for="variants">Variants:</label>
+                            <div id="variants">
+                                <!-- You can add your variant fields here -->
+                            </div>
+                            <button type="button" class="btn btn-primary" id="add_variant">Add Variant</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!--Edit product-->
+{% for item in variants %}
+<div class="modal fade" id="editCategoryModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     data-bs-backdrop="static"
+     aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <form method="post" action="{% url 'edit_variant' variant_id=item.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group d-flex col-12 mx-1">
+                        <div class="col-12">
+                            <label for="">Product Name:</label>
+                            <input type="text" class="form-control" value="{{item.product.product_name}}" name="product_name" step="0.01" readonly>
+                        </div>
+
+                    </div>
+                    <div class="form-group d-flex col-12 mx-1">
+                        <div class="col-6">
+                            <label for="">Weight:</label>
+                            <input type="number" class="form-control" name="variant_weight" value="{{item.weight}}" step="0.01" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="">Unit:</label>
+                            <select class="form-control" name="unit[]" required>
+                                <option value="Kg">Kg</option>
+                                <option value="Gm">Gm</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="d-flex justify-content-between">
+
+                        <!-- Original Price -->
+                        <div class="form-group col-6">
+                            <label for="">Original price:</label>
+                            <input type="number" class="form-control" name="variant_original_price" value="{{item.original_price}}" step="0.01"
+                                   required>
+                        </div>
+
+                        <!-- Selling Price -->
+                        <div class="form-group col-6">
+                            <label for="">Selling Price:</label>
+                            <input type="number" class="form-control" name="variant_selling_price" value="{{item.selling_price}}" step="0.01"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="form-group">
+                        <label for="variant_stock">Stock:</label>
+                        <input type="number" class="form-control" name="variant_stock" value="{{item.stock}}" step="0.01" required>
+                    </div>
+                </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endfor %}
+{% endblock %}
+
+{%block scripts %}
+<script src="{% static 'js/admin/upload_photo/style.js'%}"></script>
+<script src="{% static 'js/admin/product/variant/style.js'%}"></script>
+{%endblock %}

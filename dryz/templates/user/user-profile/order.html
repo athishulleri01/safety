@@ -1,0 +1,127 @@
+{% extends 'user/user-profile/profile-info.html' %}
+{% load static %}
+{% block 'title'%} checkout{% endblock %}
+{% block styles %}
+<style>
+
+    .custom-table tr {
+        margin: 10px;
+        padding: 10px; /* Add padding to give space around the content within each row */
+    }
+
+
+
+</style>
+
+{% endblock %}
+{% block body %}
+<!--            profile edit-->
+<!-- Profile Edit -->
+<!-- Edit Profile -->
+{% if order_items %}
+<div class="container" style="bg-color: white !important;">
+    <div class="d-flex">
+        <div class="col-6">
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="col-6 d-flex justify-content-end ">
+                <div class="mr-2">
+                    <select class="form-select" aria-label="status" name="status">
+                        <option selected value="status">status</option>
+                        <option value="all">All</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Order Confirmed">Order confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Returned">Returned</option>
+                    </select>
+                </div>
+                <div class="ml-4 btn btn-primary">
+                    <button type="submit" class="btn btn-primary">filter</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-12 m-5">
+            <table class="col-lg-12 col-md-6 col-sm-3 custom-table">
+                {% for item in order_items %}
+                <tr>
+                    <td>
+                        <div class="mt-5">
+                            <a href="{% url 'track_order_status' order_item_id=item.id %}">
+                                <img src="/media/{{item.product.images}}" class="img-fluid rounded-3"
+                                     alt="Shopping item" style="width: 65px;">
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{% url 'track_order_status' order_item_id=item.id %}">
+                            <div class="ms-3 mt-5">
+                                <h5>{{item.product.product_name}}</h5>
+                                <p class="small mb-0">weight: {{item.variant.weight}} g</p>
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'track_order_status' order_item_id=item.id %}">
+                            <div class="mt-5">
+                                <div style="width: 50px;">
+                                    <h5 class="fw-normal mb-0">₹ {{item.order.total_price}}</h5>
+                                </div>
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'track_order_status' order_item_id=item.id %}">
+                            <div class="d-flex flex-row align-items-center mt-5">
+                                <div class="ms-3">
+                                    {% if item.status == 'Canceled' %}
+                                    <div class="btn btn-danger text-white"><h5>{{item.status}}</h5></div>
+                                    {% elif item.status == 'Delivered'%}
+                                    <div class="btn btn-success  text-white"><h5>{{item.status}}</h5></div>
+                                    {% elif item.status == 'Order confirmed' %}
+                                    <div class="btn btn-success text-white"><h5>{{item.status}}</h5></div>
+                                    {% elif item.status == 'Shipped' %}
+                                    <div class="btn btn-info text-white"><h5>{{item.status}}</h5></div>
+                                    {% elif item.status == 'Out for delivery' %}
+                                    <h5 style="color:orange;">{{item.status}}</h5>
+                                    {% elif item.status == 'Return requested' %}
+                                    <div class="btn btn-success text-white"><h5>{{item.status}}</h5></div>
+                                    {% elif item.status == 'Return processing' %}
+                                    <div class="btn btn-warning"><h5>{{item.status}}</h5></div>
+                                    {% else %}
+                                    <h5 style="color:green;">{{item.status}}</h5>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="col-lg-12 col-md-6 ">
+    <div class="d-flex justify-content-center align-item-center"><h3>Your order list is empty</h3></div>
+    <br>
+    <div class="d-flex justify-content-center align-item-center"><a href="{% url 'view_shop' %}"
+                                                                    class="btn btn-warning">Go to Shope</a></div>
+</div>
+{% endif %}
+{% endblock %}
+{% block j-script %}
+
+<!-- Add this in the head section of your HTML file -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+</script>
+{% endblock %}

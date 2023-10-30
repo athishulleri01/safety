@@ -1,0 +1,39 @@
+{% extends 'layouts/main.html'%}
+{% load static %}
+{% block 'title'%} shope{% endblock %}
+{% block styles %}
+
+
+<style>
+
+</style>
+{%endblock%}
+<!-- Body Section Begin -->
+{% block 'body'%}
+
+<h2>order page</h2>
+
+{% endblock%}
+
+{% block j-script %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!--Razorpay checkout-->
+<script>
+            document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                title: "Congratulations!",
+                text: "Your order has been placed successfully",
+                icon: "success",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    window.location.href = '/cart/my-orders/';
+                } else {
+                    Swal.fire("Your imaginary file is safe!");
+                }
+            });
+        });
+</script>
+{% endblock %}

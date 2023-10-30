@@ -1,0 +1,343 @@
+{% extends 'layouts/main.html'%}
+{% load static %}
+{% block 'title'%} shope{% endblock %}
+{% block styles %}
+<style>
+
+.price {
+  font-weight: 600;
+  color: #212529;
+}
+
+.price-old {
+  color: #969696;
+  margin-left: 3px;
+  font-size: 85%;
+}
+
+</style>
+{%endblock%}
+<!-- Body Section Begin -->
+{% block 'body'%}
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2 style="color:black;">Dryz Shop</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <div class="sidebar">
+                    <div class="hero__categories mb-5">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>All Categories</span>
+                        </div>
+                        <ul>
+                            <li><a href="{% url 'view_shop'%}">All Category</a>
+                                {% for cat in sub_category %}
+                            <li><a href="{% url 'show_category_product' cat_id=cat.id %}">{{cat.sub_category_name}}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="sidebar__item">
+                            <h4>Price</h4>
+                            <div class="price-range-wrap">
+                                <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                     data-min="10" data-max="2000">
+                                    <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                </div>
+                                <div class="range-slider">
+                                    <div class="price-input">
+                                        <input type="text" id="minamount" name="minamount" value="10">
+                                        <input type="text" id="maxamount" name="maxamount" value="2000">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sidebar__item">
+                            <h4>Popular Size</h4>
+                            <div class="sidebar__item__size">
+                                <label for="large">
+                                    1 kg
+                                    <input type="radio" id="large" name="filter_weight" value="1">
+                                </label>
+                            </div>
+
+                            <div class="sidebar__item__size">
+                                <label for="medium">
+                                    500 gm
+                                    <input type="radio" id="medium" name="filter_weight" value="500">
+                                </label>
+                            </div>
+                            <div class="sidebar__item__size">
+                                <label for="small">
+                                    250 gm
+                                    <input type="radio" id="small" name="filter_weight" value="250">
+                                </label>
+                            </div>
+
+                        </div>
+                        <button type="submit" class="btn btn-primary">filter</button>
+                    </form>
+                    <div class="sidebar__item">
+                        <div class="latest-product__text">
+                            <h4>Latest Products</h4>
+                            <div class="latest-product__slider owl-carousel">
+                                <div class="latest-prdouct__slider__item">
+                                    {% for product in products %}
+                                    {% if forloop.counter <= 3%}
+                                    <a href="{% url 'single_product' product_id=product.id %}"
+                                       class="latest-product__item">
+                                        <div class="latest-product__item__pic">
+                                            <img src="/media/{{product.product.images}}" alt="">
+                                        </div>
+                                        <div class="latest-product__item__text">
+                                            <h6>₹ {{product.product.product_name}}</h6>
+                                            <span>₹ {{product.selling_price}}</span>
+                                        </div>
+                                    </a>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                                <div class="latest-prdouct__slider__item">
+                                    {% for product in products %}
+                                    {% if forloop.counter > 3%}
+                                    <a href="{% url 'single_product' product_id=product.id %}"
+                                       class="latest-product__item">
+                                        <div class="latest-product__item__pic">
+                                            <img src="/media/{{product.product.images}}" alt="">
+                                        </div>
+                                        <div class="latest-product__item__text">
+                                            <h6>₹ {{product.product.product_name}}</h6>
+                                            <span>₹ {{product.selling_price}}</span>
+                                        </div>
+                                    </a>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if cat_products %}
+            <div class="col-lg-9 col-md-7">
+                <div class="row">
+                    {% for product in cat_products %}
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="product__item">
+
+                            <div class="product__item__pic set-bg" data-setbg="">
+                                <a href="{% url 'single_product' product_id=product.id %}">
+                                    <img src="/media/{{product.product.images}}">
+                                </a>
+                                <ul class="product__item__pic__hover">
+                                    <li><a href="{% url 'add_wishlist' variant_id=product.id%}"><i class="fa fa-heart"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                    <li><a href="{% url 'add_cart' product.id %}"><i
+                                            class="fa fa-shopping-cart"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="product__item__text">
+                                <h6><a href="#"> {{product.product.product_name}}</a></h6>
+                                <h5>₹ {{product.selling_price}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        {% if products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        {% endif %}
+                        {% for i in products.paginator.page_range %}
+                        {% if products.number == i %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1" aria-disabled="true">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% else %}
+            {% if sale_off %}
+            <div class="col-lg-9 col-md-7">
+                <div class="product__discount">
+                    <div class="section-title product__discount__title">
+                        <h2>Sale Off</h2>
+                    </div>
+                    <div class="row">
+                        <div class="product__discount__slider owl-carousel">
+                            {% for product in sale_off %}
+                            <div class="col-lg-4">
+                                <div class="product__discount__item">
+                                    <div class="product__discount__item__pic set-bg"
+                                         data-setbg="">
+                                        <a href="{% url 'single_product' product_id=product.id %}">
+                                            <img src="/media/{{product.product.images}}">
+                                        </a>
+                                        <div class="product__discount__percent">-20%</div>
+                                        <ul class="product__item__pic__hover">
+                                            <li><a href="{% url 'add_wishlist' variant_id=product.id%}"><i class="fa fa-heart"></i></a></li>
+                                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                            <li><a href="{% url 'add_cart' product.id %}"><i
+                                                    class="fa fa-shopping-cart"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="product__discount__item__text">
+                                        <span>{{product.product.category.category_name}}</span>
+                                        <h5><a href="#">₹ {{product.product.product_name}}</a></h5>
+                                        <div class="product__item__price">{{product.selling_price}}<span>{{product.original_price}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+                {% if all_products %}
+                <div class="filter__item">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-5">
+
+                        </div>
+                        <div class="col-lg-4 col-md-4">
+                            <div class="filter__found">
+                                <h6>Other Products </h6>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    {% for product in all_products %}
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="product__item">
+                            <div class="product__item__pic set-bg" data-setbg="">
+                                <a href="{% url 'single_product' product_id=product.id %}">
+                                    <img src="/media/{{product.product.images}}">
+                                </a>
+                                <ul class="product__item__pic__hover">
+                                    <li><a href="{% url 'add_wishlist' variant_id=product.id%}"><i class="fa fa-heart"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                    <li><a href="{% url 'add_cart' product.id %}"><i
+                                            class="fa fa-shopping-cart"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="product__item__text">
+                                <h6><a href="{% url 'single_product' product_id=product.id %}">₹
+                                    {{product.product.product_name}}</a></h6>
+                                <h5>₹ {{product.selling_price}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <!--                padgination-->
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        {% if cat_products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ cat_products.previous_page_number }}">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        {% endif %}
+                        {% for i in cat_products.paginator.page_range %}
+                        {% if cat_products.number == i %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if cat_products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ cat_products.next_page_number }}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1" aria-disabled="true">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+<!-- Product Section End -->
+
+
+{% endblock%}
+
+{% block j-script %}
+<script>
+        $(function() {
+            const slider = $('.price-range');
+            const minAmount = $("#minamount");
+            const maxAmount = $("#maxamount");
+
+            slider.slider({
+                range: true,
+                min: 10,
+                max: 2000,
+                values: [10, 2000],
+                slide: function(event, ui) {
+                    minAmount.val("₹"+ui.values[0]);
+                    maxAmount.val("₹"+ui.values[1]);
+                }
+            });
+        });
+
+</script>
+{% endblock %}
+

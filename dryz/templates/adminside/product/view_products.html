@@ -1,0 +1,254 @@
+{% extends 'layouts/admin_main.html' %}
+{% load static %}
+
+{% block styles %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="{% static 'css/admin/css/image_upload.css' %}" type="text/css">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid pt-4 ">
+    <div class="row b-5">
+        <div class="col-md-12">
+            <!--         <a href="">-->
+            <!--                <button class="btn toggle-btn "  "></button>-->
+            <!--            </a>-->
+            <button type="button" class="btn text-white mb-3" style="background-color:rgba(127, 173, 57, 1)"
+                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add Product
+            </button>
+        </div>
+    </div>
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between ">
+            <h6 class="mb-0">Products</h6>
+
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0 table-striped">
+                <thead>
+                <tr class="text-dark">
+                    <th scope="col"></th>
+                    <th scope="col">PRODUCTS</th>
+                    <th scope="col">DESCRIPTION</th>
+                    <th scope="col">CATEGORY</th>
+                    <th scope="col">SUB CATEGORY</th>
+                    <th scope="col">IMAGES</th>
+                    <th scope="col">STOCK</th>
+                    <th scope="col">CREATED DATE</th>
+                    <th scope="col" colspan="3">OPERATIONS</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in products %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{item.product_name}}</td>
+                    <td>{{item.description}}</td>
+                    <td>{{item.category}}</td>
+                    <td><p>{{item.sub_category}}</p></td>
+<!--                    <td><a href="" id="image_modal{{forloop.counter}}"><img src="/media/{{item.images}}" width="80%"></a></td>-->
+                    <td><a href="{% url 'view_images' product_id=item.id %}" class="btn  mb-3">
+                            <img src="/media/{{item.images}}" width="80%">
+                            <button class="btn btn-outline-dark">Images</button>
+                        </a></td>
+                    <td>
+                        <a href="{% url 'view_variant' variant_id=item.id %}">
+                            <button type="button" class="btn btn-outline-dark">Stock</button>
+                        </a>
+                    </td>
+                    <td>{{item.created_date}}</td>
+
+                    <td>
+                        <button type="button" class="btn  mb-3"
+                                data-bs-toggle="modal" data-bs-target="#editCategoryModal-{{forloop.counter}}">
+                            <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                        </button>
+                    </td>
+                    <td>
+                        {% if item.is_visible %}
+                        <a href="{% url 'product_unlist' product_id=item.id %}">
+                            <button class="btn btn-danger toggle-btn">Unlist</button>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'product_unlist' product_id=item.id %}">
+                            <button class="btn btn-success toggle-btn">List</button>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<nav aria-label="...">
+    <ul class="pagination">
+        {% if products.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ products.previous_page_number }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
+        {% endif %}
+        {% for i in products.paginator.page_range %}
+        {% if products.number == i %}
+        <li class="page-item active" aria-current="page">
+            <span class="page-link">{{ i }}</span>
+        </li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if products.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" aria-disabled="true">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<!--data-bs-backdrop="static"-->
+<!--Add Product-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_product' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Product Name -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="category_name">Product Name:</label>
+                            <input type="text" class="form-control" name="product_name" required>
+                        </div>
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="category">Category:</label>
+                            <select class="form-control" id="category" name="category_name" required>
+                                {% for cat in sub_cat %}
+                                <option value="{{cat.id }}">{{cat.sub_category_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                    </div>
+
+                    <!-- Product Images -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="images">Product Images :</label>
+                            <!--                            <input class="form-control" type="file" name="img">-->
+                            <input type="file" id="images" name="images" multiple required>
+
+                        </div>
+                    </div>
+
+                    <!-- Variants -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-12 mx-1">
+                            <label for="variants">Variants:</label>
+                            <div id="variants">
+                                <!-- You can add your variant fields here -->
+                            </div>
+                            <button type="button" class="btn btn-primary" id="add_variant">Add Variant</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!--Edit product-->
+{% for item in products %}
+<div class="modal fade" id="editCategoryModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     data-bs-backdrop="static"
+     aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <form method="post" action="{% url 'edit_product' product_id=item.id %}" enctype="multipart/form-data"
+                  id="your_form_id">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Product Name -->
+                    <div class="d-flex justify-content-between">
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="category_name">Product Name:</label>
+                            <input type="text" class="form-control" value="{{item.product_name}}" name="product_name"
+                                   required>
+                        </div>
+                        <div class="form-group col-md-6 mx-1">
+                            <label for="category">Category:</label>
+                            <select class="form-control" name="category_name" required>
+                                {% for cat in sub_cat %}
+                                <option value="{{cat.id }}">{{cat.sub_category_name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control" name="description" rows="4">{{item.description}}</textarea>
+                    </div>
+                    <!-- Image -->
+                    <div class="d-flex justify-content-between">
+                        <div class="image-upload text-center" style="margin-bottom: 30px">
+                            <label for="file-input">
+                                <img id="img" src="/media/{{item.images}}" alt="Upload Image" style="margin: auto"/>
+                            </label>
+
+                            <input id="file-input" onchange="readURL(this)" name="img" type="file">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/admin/upload_photo/style.js'%}"></script>
+<script src="{% static 'js/admin/product/variant/style.js'%}"></script>
+{% endblock %}

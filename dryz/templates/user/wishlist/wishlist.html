@@ -1,0 +1,123 @@
+{% extends 'layouts/main.html'%}
+{% load static %}
+{% block 'title'%} shope{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/user/cart/ui.css' %}" type="text/css">
+<style>
+
+.price {
+  font-weight: 600;
+  color: #212529;
+}
+
+.price-old {
+  color: #969696;
+  margin-left: 3px;
+  font-size: 85%;
+}
+
+
+   #coupon_select {
+        width: 500px; /* You can adjust the width as needed */
+    }
+
+
+
+</style>
+{%endblock%}
+<!-- Body Section Begin -->
+{% block 'body'%}
+{% if not wishlist %}
+<h2 class="text-center">Your Wish List is empty</h2>
+<br>
+<div class="text-center mb-4">
+    <a href="{% url 'view_shop' %}" class="primary-btn cart-btn ">CONTINUE SHOPPING</a>
+
+</div>
+{% else %}
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="shoping__product">Products</th>
+                            <th></th>
+                            <th>Price</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in wishlist %}
+                        <tr>
+                            <td class="shoping__cart__item">
+                                <a href="#">
+                                    <img src="{{ item.variant.product.images.url }}" alt="" width="100px">
+                                    <h5>{{item.variant.product.product_name}}</h5>
+                                </a>
+
+                            </td>
+                            <td class="shoping__cart__price">{{item.variant.weight}}{{item.variant.unit}}</td>
+                            <td class="shoping__cart__price">
+                                ₹{{item.variant.selling_price}}
+                            </td>
+
+                            <td class="shoping__cart__total">
+                               <a href="{% url 'add_wish_to_cart' item.id %}" class="btn btn-warning">Add to Cart</a>
+                            </td>
+                            <td class="shoping__cart__item__close">
+                                <a href="{% url 'remove_wish_list' wish_id=item.id %}">
+                                    <span class="icon_close"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__btns">
+                    <a href="{% url 'view_shop' %}" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+<!-- Shoping Cart Section End -->
+{% endblock%}
+
+{% block j-script %}
+<script>
+$(document).ready(function() {
+    $('.add-to-cart').on('click', function(e) {
+        e.preventDefault();  // Prevent the default behavior of the anchor tag
+console.log("hh");
+        var url = $(this).attr('href');  // Get the URL from the anchor tag's href attribute
+
+        $.ajax({
+            type: 'GET',  // Or 'POST' based on your server endpoint
+            url: url,
+            success: function(response) {
+                // Handle the success response here
+                console.log('Item added to cart');
+                // You can display a success message or perform additional actions
+            },
+            error: function(xhr, status, error) {
+                // Handle any errors that occur during the AJAX request
+                console.log('Error: ' + error);
+                // You can display an error message or handle the error as needed
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

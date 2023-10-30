@@ -1,0 +1,219 @@
+{% extends 'layouts/admin_main.html' %}
+{% load static %}
+
+<!--applying extra style-->
+{% block styles %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="{% static 'css/admin/css/image_upload.css' %}" type="text/css">
+{% endblock %}
+
+<!--Visible elements-->
+{% block content %}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="b-5">
+        <div class="col-md-12 d-flex justify-content-between">
+            <button type="button" class="btn text-white mb-3" style="background-color:rgba(127, 173, 57, 1)"
+                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                Add Sub-Category
+            </button>
+        </div>
+
+    </div>
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Categories</h6>
+
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                <tr class="text-dark">
+                    <th scope="col"></th>
+                    <th scope="col">CATEGORY</th>
+                    <th scope="col">SUB CATEGORY</th>
+                    <th scope="col">DESCRIPTION</th>
+                    <th scope="col">IMAGES</th>
+                    <th scope="col" colspan="2">OPERATIONS</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in sub_cat %}
+                <tr>
+                    <td>{{forloop.counter }}</td>
+                    <td>{{item.category.category_name}}</td>
+                    <td>{{item.sub_category_name}}</td>
+                    <td>{{item.description}}</td>
+                    <td><img src="/media/{{item.cat_image}}" width="35%"></td>
+
+                    <td>
+                        <button type="button" class="btn  mb-3"
+                                data-bs-toggle="modal" data-bs-target="#editCategoryModal-{{forloop.counter}}">
+                            <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                        </button>
+
+                    </td>
+                    <td>
+                        {% if item.is_visible %}
+                        <a href="{% url 'sub_unlist' subcat_id=item.id %}">
+                            <button class="btn btn-danger toggle-btn">Unlist</button>
+                        </a>
+                        {% else %}
+                        <a href="{% url 'sub_unlist' subcat_id=item.id %}">
+                            <button class="btn btn-success toggle-btn">List</button>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+                        <nav aria-label="...">
+                    <ul class="pagination">
+                        {% if sub_cat.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ sub_cat.previous_page_number }}">Previous</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        {% endif %}
+                        {% for i in sub_cat.paginator.page_range %}
+                        {% if sub_cat.number == i %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ i }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                        {% if sub_cat.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ sub_cat.next_page_number }}">Next</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" tabindex="-1" aria-disabled="true">Next</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+        </div>
+    </div>
+</div>
+
+<!--------------------------------------------Add Category------------------------------------------------------->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_subcategory' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Add SubCategory</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Category Name -->
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select class="form-control" id="category" name="category_name" required>
+                            {% for cat in categories %}
+                            <option value="{{cat.id }}">{{cat.category_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!-- Sub Category Name -->
+                    <div class="form-group">
+                        <label for="category_name">Sub Category Name:</label>
+                        <input type="text" class="form-control" name="sub_category_name" required>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control"  name="description" rows="4"></textarea>
+                    </div>
+                    <!-- Category Image -->
+                    <div class="form-group">
+                        <label for="cat_img">Category Image:</label>
+                        <input type="file" class="form-control-file" id="cat_img" name="cat_img">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-------------------------------------------------Edit modal--------------------------------------------------------->
+
+{% for category in sub_cat %}
+<div class="modal fade" id="editCategoryModal-{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'edit_subcategories' subcat_id=category.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Add SubCategory</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Category Name -->
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select class="form-control" name="category_name" required>
+                            {% for cat in categories %}
+                            <option value="{{cat.id}}">{{cat.category_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category_name">Sub Category Name:</label>
+                        <input type="text" class="form-control" value="{{category.sub_category_name}}" name="sub_category_name" required>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea class="form-control"  name="description" rows="4">{{category.description}}</textarea>
+                    </div>
+
+                    <div class="form-group">
+<!--                        <label for="cat_img">Category Image:</label>-->
+<!--                        <input type="file" class="form-control-file"  name="cat_img">-->
+                        <div class="image-upload text-center" style="margin-bottom: 30px">
+                            <label for="file-input">
+                                <img id="img" src="/media/{{category.cat_image}}" alt="Upload Image"
+                                     style="margin: auto"/>
+                                <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/30/add--v1.png" alt="add--v1"/>
+                            </label>
+                            <input id="file-input" onchange="readURL(this)" name="cat_img" type="file">
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{%endfor%}
+
+{% endblock %}
+{%block scripts %}
+<script src="{% static 'js/admin/upload_photo/style.js'%}"></script>
+{%endblock %}

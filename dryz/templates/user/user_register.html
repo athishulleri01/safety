@@ -1,0 +1,70 @@
+{% extends 'layouts/main.html'%}
+{% load static %}
+{% block 'title' %} login{% endblock %}
+
+<!-- Body Section Begin -->
+{% block 'body'%}
+<div class="container">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Register</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+
+    <div class="row justify-content-center align-items-center pb-3">
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Registration</h4>
+                </div>
+                {% include 'include/alert.html' %}
+                <div class="card-body">
+                    <form id="myForm" method="post" >
+                        {% csrf_token %}
+                        <div class="form-group">
+
+                            <input type="text" class="form-control" name="username" id="username"
+                                   placeholder="Username" value="{{pre_username}}" required>
+                        </div>
+                        <div class="form-group">
+
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="Email" value="{{pre_email}}" required>
+                        </div>
+                        <div class="form-group">
+
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   placeholder="Phone No" value="{{pre_phone}}" required>
+                        </div>
+                        <div class="form-group">
+
+                            <input type="password" class="form-control" name="password"
+                                   placeholder="Password" required>
+                        </div>
+                        <div class="form-group">
+
+                            <input type="password" class="form-control" name="cpassword" id="password"
+                                   placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                        <hr>
+                        <div class="text-center">
+                            <a href="{% url 'user_signin'%}">i have already accout</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock%}
+
+{% block 'j-script' %}
+
+{% endblock %}
